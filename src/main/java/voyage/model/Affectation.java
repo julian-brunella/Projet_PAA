@@ -1,8 +1,11 @@
 package main.java.voyage.model;
 
 
+import main.java.voyage.exception.SaisieInvalideException;
+
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 
 /**
@@ -42,6 +45,49 @@ public class Affectation {
         this.attribution.put(personne, chambre);
     }
 
+
+    /**
+     * Échange les chambres de deux personnes spécifiées par leur nom.
+     *
+     * @param nom1 Le nom de la première personne.
+     * @param nom2 Le nom de la seconde personne.
+     * @throws SaisieInvalideException Si l'une des personnes n'existe pas ou n'a pas de chambre.
+     */
+    public void echangerChambres(String nom1, String nom2) throws SaisieInvalideException {
+        // On cherche les personnes
+        Personne p1 = null;
+        Personne p2 = null;
+        for (Personne p : groupe.getPersonnes()) {
+            if (p.getNom().equals(nom1)) {
+                p1 = p;
+            } else if (p.getNom().equals(nom2)) {
+                p2 = p;
+            }
+        }
+
+        // Gestion des erreurs : vérification de l'existence des personnes
+        if (p1 == null) {
+            // On lève l'Exception SaisieInvalideException
+            throw new SaisieInvalideException("La personne \"" + nom1 + "\" n'existe pas dans le groupe.");
+        }
+        if (p2 == null) {
+            // On lève l'Exception SaisieInvalideException
+            throw new SaisieInvalideException("La personne \"" + nom2 + "\" n'existe pas dans le groupe.");
+        }
+
+        // Echange des valeurs
+        // Vérification qu'elles ont bien une chambre attribuée avant de faire l'échange
+        if (!attribution.containsKey(p1) || !attribution.containsKey(p2)) {
+            throw new SaisieInvalideException("Impossible d'échanger : au moins l'une de ces personnes n'a pas encore de chambre.");
+        }
+
+        // On fait l'échange à partir de là, après la vérification
+        int chambre1 = attribution.get(p1);
+        int chambre2 = attribution.get(p2);
+        attribution.put(p1, chambre2);
+        attribution.put(p2, chambre1);
+    }
+
     /**
      * 
      * @param personne
@@ -70,4 +116,22 @@ public class Affectation {
     }
 
 
+
+    /**
+     * Calcule le coût de l'affectation. Le coût correspond au nombre total de personnes jalouses.
+     *
+     * @return Le nombre de personnes jalouses.
+     */
+    public int calculerCout() {
+        int cout = 0; // le compteur qui représente le coût (qu'on va donc renvoyer à la fin)
+        // On calcule le coût de l'affectation en sommant le nombre de personnes jalouses
+        for (Personne p : groupe.getPersonnes()) {
+            if (attribution.containsKey(p) && estJalouse(p)) {
+                // Une personne jalouse de plusieurs voisins ne compte que pour 1
+                // Ce n'est pas le nombre de personnes dont elle est jalouse
+                cout++;
+            }
+        }
+        return cout;
+    }
 }
