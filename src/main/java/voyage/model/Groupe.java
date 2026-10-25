@@ -1,5 +1,7 @@
 package main.java.voyage.model;
 
+import main.java.voyage.exception.SaisieInvalideException;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -58,7 +60,7 @@ public class Groupe {
         this.grapheVoyage.get(p2).add(p1);
     }
 
-    public void definirPreferences(String nom,ArrayList<Integer> preferences){
+    public void definirPreferences(String nom,ArrayList<Integer> preferences) throws SaisieInvalideException {
         //On recupere les listes de preference de chaque personne
         Personne p=personnesParNom.get(nom);
         if (p!=null){
