@@ -134,4 +134,25 @@ public class Affectation {
         }
         return cout;
     }
+
+
+    /**
+     * Affiche clairement l'affectation.
+     *
+     * @return Une chaîne de caractères formatée (ex: "A:2\nB:1\nC:3").
+     */
+    public String afficher() {
+        // StringBuilder car on fait une boucle où l'on modifie plein de fois la chaîne de caractères.
+        // On évite ainsi de recréer un String à chaque tour de boucle.
+        StringBuilder sb = new StringBuilder();
+
+        // On ajoute chaque personne à la chaîne une à une, sous le format "Nom:Chambre" puis un retour à la ligne.
+        for (Personne p : groupe.getPersonnes()) {
+            if (attribution.containsKey(p)) {
+                sb.append(p.getNom()).append(":").append(attribution.get(p)).append("\n"); // Retour à la ligne
+            }
+        }
+
+        return sb.toString().trim(); // On enlève le dernier saut de ligne superflu
+    }
 }
