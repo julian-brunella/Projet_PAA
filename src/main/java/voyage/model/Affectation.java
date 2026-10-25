@@ -42,5 +42,32 @@ public class Affectation {
         this.attribution.put(personne, chambre);
     }
 
+    /**
+     * 
+     * @param personne
+     * @return
+     */
+    public boolean estJalouse(Personne personne){
+        //recupere la position de la chambre dans la liste de la personne
+        Integer chambrePersonne=this.attribution.get(personne);
+        //Si la chambre n'a pas encore été affecté
+        if (chambrePersonne==null){
+            throw new IllegalArgumentException(personne.getNom()+" n'a pas de chambre.");
+        }
+
+        //On recupere les gens que la personne aime pas
+        Set<Personne> voisinsConflits=this.groupe.getVoisinsConflit(personne);
+
+        for (Personne pConflit:voisinsConflits){
+            Integer chambrePConflit=this.attribution.get(pConflit);
+
+            //Regarde si le rang de la chambre de la personne qu'elle aime pas est plus haut que la sienne
+            if (chambrePConflit!=null && personne.prefere(chambrePConflit,chambrePersonne)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }
