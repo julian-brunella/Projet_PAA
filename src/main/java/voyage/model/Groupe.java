@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * Contient le nombre de chambres et le graphe non-orienté des personnes où les arêtes représentent les relations "ne s'aiment pas" et les sommets représentent les personnes.
  *
@@ -35,5 +38,60 @@ public class Groupe {
             this.personnesParNom.put(nom, nouvellePersonne); // On l'ajoute dans l'association Nom/Personne
             this.grapheVoyage.put(nouvellePersonne, new HashSet<>()); // On l'ajoute dans le graphe, avec au départ aucune relation de non-entente
         }
+    }
+
+    public void ajouterRelationConflit(String nom1,String nom2){
+        //On recupere les personnes a partir de leur nom
+        Personne p1=personnesParNom.get(nom1);
+        Personne p2=personnesParNom.get(nom2);
+
+        if (p1==null || p2==null){
+            throw new IllegalArgumentException("Aucune personne avec le nom donné");
+        }
+
+        if (p1.equals(p2)){
+            throw new IllegalArgumentException("La même personne à été donné");
+        }
+
+        //La relation est symetrique
+        this.grapheVoyage.get(p1).add(p2);
+        this.grapheVoyage.get(p2).add(p1);
+    }
+
+    public void definirPreferences(String nom,ArrayList<Integer> preferences){
+        //On recupere les listes de preference de chaque personne
+        Personne p=personnesParNom.get(nom);
+        if (p!=null){
+            p.definirPreferences(preferences,this.nbPersonnes);
+        }
+    }
+
+    public ArrayList<Personne> obtenirPersonnesSansPreferencesValides(){
+        //Regarde pour chaque personne si sa liste de preference est complete
+        ArrayList<Personne> personnesIncompletes=new ArrayList<>();
+        for (Personne p:personnesParNom.values()){
+            if (!p.aDesPreferencesCompletes(this.nbPersonnes)){
+                personnesIncompletes.add(p);
+            }
+        }
+        return personnesIncompletes;
+    }
+
+    public Set<Personne> getVoisinsConflit(Personne personne){
+        if (!grapheVoyage.containsKey(personne)){
+            throw new IllegalArgumentException("Cette personne n'est pas dans le groupe");
+        }
+        //Renvoie une copie pour pas que le set originel puisse etre modifié
+        return new HashSet<>(grapheVoyage.get(personne));
+    }
+
+    public ArrayList<Personne> getPersonnes(){
+        //pas besoin d'expliquer la
+        return new ArrayList<>(personnesParNom.values());
+    }
+
+    public int getNbChambres(){
+        //pareil
+        return this.nbPersonnes;    
     }
 }
